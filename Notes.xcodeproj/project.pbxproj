@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2B29C7142B0C048700E778F6 /* NotesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B29C7132B0C048700E778F6 /* NotesViewController.swift */; };
+		2B29C7162B0C128E00E778F6 /* SketchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B29C7152B0C128E00E778F6 /* SketchViewController.swift */; };
+		2B29C71A2B0C2ECD00E778F6 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B29C7192B0C2ECD00E778F6 /* Note.swift */; };
 		2B4A44412B03CB520083F2DF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B4A44402B03CB520083F2DF /* AppDelegate.swift */; };
 		2B4A44452B03CB520083F2DF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B4A44442B03CB520083F2DF /* ViewController.swift */; };
 		2B4A444A2B03CB560083F2DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2B4A44492B03CB560083F2DF /* Assets.xcassets */; };
@@ -17,6 +20,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2B29C7132B0C048700E778F6 /* NotesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesViewController.swift; sourceTree = "<group>"; };
+		2B29C7152B0C128E00E778F6 /* SketchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SketchViewController.swift; sourceTree = "<group>"; };
+		2B29C7192B0C2ECD00E778F6 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		2B4A443D2B03CB520083F2DF /* Notes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Notes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B4A44402B03CB520083F2DF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2B4A44442B03CB520083F2DF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -61,7 +67,10 @@
 			isa = PBXGroup;
 			children = (
 				2B4A44402B03CB520083F2DF /* AppDelegate.swift */,
+				2B29C7192B0C2ECD00E778F6 /* Note.swift */,
 				2B4A44442B03CB520083F2DF /* ViewController.swift */,
+				2B29C7132B0C048700E778F6 /* NotesViewController.swift */,
+				2B29C7152B0C128E00E778F6 /* SketchViewController.swift */,
 				2B4A44582B03CDFB0083F2DF /* inputCell.swift */,
 				2B4A445A2B03CE140083F2DF /* inputValidation.swift */,
 				2B4A44492B03CB560083F2DF /* Assets.xcassets */,
@@ -153,8 +162,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B4A44452B03CB520083F2DF /* ViewController.swift in Sources */,
+				2B29C7142B0C048700E778F6 /* NotesViewController.swift in Sources */,
 				2B4A44592B03CDFB0083F2DF /* inputCell.swift in Sources */,
+				2B29C71A2B0C2ECD00E778F6 /* Note.swift in Sources */,
 				2B4A44412B03CB520083F2DF /* AppDelegate.swift in Sources */,
+				2B29C7162B0C128E00E778F6 /* SketchViewController.swift in Sources */,
 				2B4A445B2B03CE140083F2DF /* inputValidation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

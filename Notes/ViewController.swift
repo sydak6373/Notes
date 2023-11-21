@@ -138,16 +138,23 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @objc func buttonPressed(_ sender: UIButton) {
             switch selectedOption {
             case .login:
-                
                 if let loginCell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? InputCell,
-                    let passwordCell = tableView.cellForRow(at: IndexPath(row: 2, section: 0)) as? InputCell,
-                    let login = loginCell.textField.text, let password = passwordCell.textField.text {
-                    if InputValidation.shared.validateAndSaveData(login: login, email: nil, password: password, repeatedPassword: nil) {
-                                textFieldValues.removeAll { $0.isLogin || $0.isPassword}
-                                textFieldValues.append(.login(login))
-                                textFieldValues.append(.password(password))
-                    }
-                }
+                let passwordCell = tableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? InputCell,
+                let login = loginCell.textField.text, let password = passwordCell.textField.text {
+                            
+                        guard let savedLogin = UserDefaults.standard.string(forKey: "login"),
+                        let savedPassword = UserDefaults.standard.string(forKey: "password") else {
+                                self.showError("The log-in information is incorrect.")
+                                return
+                            }
+
+                            if login == savedLogin, password == savedPassword {
+                                let notesViewController = NotesViewController()
+                                self.present(notesViewController, animated: true, completion: nil)
+                            } else {
+                                self.showError("The log-in information is incorrect.")
+                            }
+                        }
                 
                 break
                 
@@ -169,6 +176,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                         UserDefaults.standard.set(login, forKey: "login")
                         UserDefaults.standard.set(email, forKey: "email")
                         UserDefaults.standard.set(password, forKey: "password")
+                        
+                        let notesViewController = NotesViewController()
+                        present(notesViewController, animated: true, completion: nil)
                     }
                 }
             }
