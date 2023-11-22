@@ -21,7 +21,6 @@ class SketchViewController: UIViewController, UINavigationControllerDelegate {
         super.viewDidLoad()
         view.addSubview(textView)
         configureTextView()
-        configureToolbar()
         configureNotificationCenter()
     }
 
@@ -74,21 +73,6 @@ class SketchViewController: UIViewController, UINavigationControllerDelegate {
             name: UIResponder.keyboardWillChangeFrameNotification,
             object: nil
         )
-    }
-
-    private func configureToolbar() {
-        let textEditToolbar = UIToolbar(
-            frame: CGRect(
-                x: 0,
-                y: 0,
-                width: UIScreen.main.bounds.width,
-                height: 30
-            )
-        )
-        
-        textEditToolbar.sizeToFit()
-        textEditToolbar.barStyle = .default
-        textView.inputAccessoryView = textEditToolbar
     }
 
     private func configureTextView() {
