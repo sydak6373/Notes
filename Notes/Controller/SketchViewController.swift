@@ -22,7 +22,27 @@ class SketchViewController: UIViewController, UINavigationControllerDelegate {
         view.addSubview(textView)
         configureTextView()
         configureNotificationCenter()
-    }
+        NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterBackground), name: UIApplication.willResignActiveNotification, object: nil)
+        }
+
+        @objc private func appWillEnterBackground() {
+            let alert = UIAlertController(title: "Выход", message: "Вы уверены, что хотите выйти?", preferredStyle: .alert)
+          
+            let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+            alert.addAction(cancelAction)
+          
+            let exitAction = UIAlertAction(title: "Выйти", style: .destructive) { _ in
+                
+                exit(0)
+            }
+            alert.addAction(exitAction)
+          
+            present(alert, animated: true, completion: nil)
+        }
+
+        deinit {
+            NotificationCenter.default.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
+        }
 
     private func updateNote() {
         if textView.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {

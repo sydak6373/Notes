@@ -23,7 +23,7 @@ struct Note: Codable {
     init(from model: NoteEntity) {
         self.noteID = model.noteID ?? UUID()
         self.text = model.text ?? ""
-        self.data = model.data as! Data
+        self.data = model.data!
     }
 }
 

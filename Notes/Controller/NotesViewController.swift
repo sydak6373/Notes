@@ -28,18 +28,53 @@ class NotesViewController: UIViewController {
         button.titleLabel?.font = UIFont.systemFont(ofSize: 35)
         return button
     }()
+    
+    private let singOutButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.backgroundColor = .white
+        button.tintColor = .black
+        button.layer.cornerRadius = 5 / 2
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(singOutTapped), for: .touchUpInside)
+        button.setTitle("Выйти", for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 12)
+        return button
+    }()
+    
     let tableView = UITableView()
     private var notes: [Note] = []
     let lightYellowColor = UIColor(red: 241/255, green: 235/255, blue: 228/255, alpha: 1)
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .yellow
         configureTableView()
-        configureNavigationBar()
         setAddButtonConstraints()
         loadNotes()
         firstNoteInit()
-    }
+        singOutButtonConstraints()
+        NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterBackground), name: UIApplication.willResignActiveNotification, object: nil)
+        }
+
+        @objc private func appWillEnterBackground() {
+            let alert = UIAlertController(title: "Выход", message: "Вы уверены, что хотите выйти?", preferredStyle: .alert)
+          
+            let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+            alert.addAction(cancelAction)
+          
+            let exitAction = UIAlertAction(title: "Выйти", style: .destructive) { _ in
+                
+                exit(0)
+            }
+            alert.addAction(exitAction)
+          
+            present(alert, animated: true, completion: nil)
+        }
+
+        deinit {
+            NotificationCenter.default.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
+        }
 
     private func loadNotes() {
         notes = noteManager.getNotes()
@@ -74,6 +109,16 @@ class NotesViewController: UIViewController {
             maker.trailing.equalTo(view.safeAreaLayoutGuide).offset(-20)
         }
     }
+    
+    private func singOutButtonConstraints() {
+        view.addSubview(singOutButton)
+        singOutButton.snp.makeConstraints { maker in
+            maker.height.equalTo(25)
+            maker.width.equalTo(45)
+            maker.top.equalTo(view.safeAreaLayoutGuide).offset(10)
+            maker.left.equalToSuperview().offset(20)
+        }
+    }
 
     private func configureTableView() {
         view.addSubview(tableView)
@@ -88,37 +133,35 @@ class NotesViewController: UIViewController {
     private func setTableViewConstraints() {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.snp.makeConstraints { maker in
-            maker.top.bottom.left.right.equalToSuperview()
+            maker.top.equalTo(view.safeAreaLayoutGuide).offset(50)
+            maker.bottom.left.right.equalToSuperview()
         }
     }
 
-    private func configureNavigationBar() {
-        guard let navigationbar = navigationController?.navigationBar else { return }
-        title = "Notes"
-        navigationbar.tintColor = .white
-        navigationbar.barTintColor = UIColor(
-            red: 32/255,
-            green: 15/255,
-            blue: 8/255,
-            alpha: 1
-        )
-        navigationbar.titleTextAttributes = [
-            NSAttributedString.Key.foregroundColor: UIColor.white
-        ]
-        let addNoteButton = UIBarButtonItem(
-            title: "Add Note",
-            style: .plain,
-            target: self,
-            action: #selector(addNoteTapped)
-        )
-        navigationItem.rightBarButtonItem = addNoteButton
-    }
+
 
     @objc private func addNoteTapped() {
         let newNote = Note(text: "Empty Note", noteID: UUID())
         notes.append(newNote)
         saveNotes()
         tableView.reloadData()
+    }
+    
+    @objc private func singOutTapped() {
+        let alertController = UIAlertController(title: "Выйти!", message: "Выйти из", preferredStyle: .actionSheet)
+        
+        alertController.addAction(UIAlertAction(title: "приложения", style: .default, handler: { _ in
+            exit(0)
+        }))
+        
+        alertController.addAction(UIAlertAction(title: "аккаунта", style: .default, handler: { _ in
+            UserDefaults.standard.set(false, forKey: "isLoggedIn") 
+            self.dismiss(animated: true, completion: nil)
+        }))
+        
+        alertController.addAction(UIAlertAction(title: "отмена", style: .cancel, handler: nil))
+        
+        present(alertController, animated: true, completion: nil)
     }
 }
 
@@ -131,7 +174,8 @@ extension NotesViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         cell.textLabel?.text = notes[indexPath.row].text
-        cell.backgroundColor = lightYellowColor
+        cell.backgroundColor = .white
+        //lightYellowColor
         return cell
     }
 

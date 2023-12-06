@@ -18,16 +18,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let viewModel = ViewModel()
         let viewController = ViewController(viewModel: viewModel)
-        let navController = UINavigationController()
-        navController.setViewControllers([viewController], animated: true)
-        
+        let navController = UINavigationController(rootViewController: viewController)
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = navController
         window?.makeKeyAndVisible()
-        
-        
+
         return true
     }
+    
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        let backgroundTaskID = application.beginBackgroundTask(expirationHandler: nil)
+            if backgroundTaskID != .invalid {
+                application.endBackgroundTask(backgroundTaskID)
+            }
+        }
     
 }
 

@@ -78,6 +78,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewDidLoad() {
         super.viewDidLoad()
         configureView()
+        if (UserDefaults.standard.bool(forKey: "isLoggedIn")) {
         if let login = UserDefaults.standard.string(forKey: "login") {
                textFieldValues.append(.login(login))
            }
@@ -87,10 +88,39 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
            if let password = UserDefaults.standard.string(forKey: "password") {
                textFieldValues.append(.password(password))
            }
+            present(NotesViewController(), animated: true, completion: nil)
+        }
+        
+        NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(appWillEnterBackground),
+                name: UIApplication.willResignActiveNotification,
+                object: nil
+            )
         InputValidation.shared.delegate = self
         tableView.reloadData()
         
-    }
+        NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterBackground), name: UIApplication.willResignActiveNotification, object: nil)
+        }
+
+        @objc private func appWillEnterBackground() {
+            let alert = UIAlertController(title: "Выход", message: "Вы уверены, что хотите выйти?", preferredStyle: .alert)
+          
+            let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+            alert.addAction(cancelAction)
+          
+            let exitAction = UIAlertAction(title: "Выйти", style: .destructive) { _ in
+                
+                exit(0)
+            }
+            alert.addAction(exitAction)
+          
+            present(alert, animated: true, completion: nil)
+        }
+
+        deinit {
+            NotificationCenter.default.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
+        }
     
     func showError(_ message: String) {
             let alertController = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
@@ -155,6 +185,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
 
     @objc func buttonPressed(_ sender: UIButton) {
+    let userCoreDataManager = UserCoreDataManager()
             switch selectedOption {
             case .login:
                 if let loginCell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? InputCell,
@@ -162,14 +193,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 let login = loginCell.textField.text, let password = passwordCell.textField.text {
                          
                     let savedUsers = viewModel.dataStorage
-                    let matchingUsers = savedUsers.filter { $0.login == login && $0.password == password }
+                    let matchingUsersURL = savedUsers.filter { $0.login == login && $0.password == password }
+                    let matchingUsersCD = userCoreDataManager.fetchUsers(login: login, password: password)
                                 
-                    if matchingUsers.count > 0 {
+                    if matchingUsersURL.count > 0 {
+                        UserDefaults.standard.set(true, forKey: "isLoggedIn") 
+                        let notesViewController = NotesViewController()
+                        self.present(notesViewController, animated: true, completion: nil)
+                    } else if matchingUsersCD.count > 0 {
+                        UserDefaults.standard.set(true, forKey: "isLoggedIn")
                         let notesViewController = NotesViewController()
                         self.present(notesViewController, animated: true, completion: nil)
                     } else {
-                        self.showError("The log-in information is incorrect.")
-                            }
+                        self.showError("Информация для входа неверна.")
+                    }
+                    
                 }
                 break
                 
@@ -193,6 +231,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                         UserDefaults.standard.set(password, forKey: "password")
                         
                         viewModel.saveUser(login: login, email: email, password: password)
+                        userCoreDataManager.saveUser(login: login, email: email, password: password)
+
                         let notesViewController = NotesViewController()
                         present(notesViewController, animated: true, completion: nil)
                     }

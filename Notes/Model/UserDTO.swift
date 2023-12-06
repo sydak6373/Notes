@@ -17,4 +17,10 @@ struct UserDTO {
         self.email = model.email
         self.password = model.password
     }
+    
+    init(from model: UserEntity) {
+        self.login = model.login ?? ""
+        self.email = model.email ?? ""
+        self.password = model.password ?? ""
+    }
 }

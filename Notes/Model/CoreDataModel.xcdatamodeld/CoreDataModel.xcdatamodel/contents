@@ -5,7 +5,13 @@
         <attribute name="noteID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="text" optional="YES" attributeType="String"/>
     </entity>
+    <entity name="UserEntity" representedClassName="UserEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="login" optional="YES" attributeType="String"/>
+        <attribute name="password" optional="YES" attributeType="String"/>
+    </entity>
     <elements>
         <element name="NoteEntity" positionX="-63" positionY="-18" width="128" height="74"/>
+        <element name="UserEntity" positionX="-63" positionY="9" width="128" height="74"/>
     </elements>
 </model>
