@@ -11,7 +11,6 @@
 		2B29C7162B0C128E00E778F6 /* SketchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B29C7152B0C128E00E778F6 /* SketchViewController.swift */; };
 		2B29C71A2B0C2ECD00E778F6 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B29C7192B0C2ECD00E778F6 /* Note.swift */; };
 		2B29C72A2B15376300E778F6 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B29C7292B15376300E778F6 /* CoreData.framework */; };
-		2B29C72D2B153FB600E778F6 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 2B29C72C2B153FB600E778F6 /* Kingfisher */; };
 		2B29C73A2B15DF0600E778F6 /* CoreDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2B29C7382B15DF0600E778F6 /* CoreDataModel.xcdatamodeld */; };
 		2B29C73C2B15F46900E778F6 /* UserRespons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B29C73B2B15F46900E778F6 /* UserRespons.swift */; };
 		2B29C73E2B17210600E778F6 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B29C73D2B17210600E778F6 /* ViewModel.swift */; };
@@ -44,7 +43,6 @@
 		2B29C7152B0C128E00E778F6 /* SketchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SketchViewController.swift; sourceTree = "<group>"; };
 		2B29C7192B0C2ECD00E778F6 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		2B29C7292B15376300E778F6 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
-		2B29C72B2B153E2C00E778F6 /* Kingfisher */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Kingfisher; path = Notes/Carthage/Checkouts/Kingfisher; sourceTree = "<group>"; };
 		2B29C7392B15DF0600E778F6 /* CoreDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreDataModel.xcdatamodel; sourceTree = "<group>"; };
 		2B29C73B2B15F46900E778F6 /* UserRespons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UserRespons.swift; path = Notes/Model/UserRespons.swift; sourceTree = SOURCE_ROOT; };
 		2B29C73D2B17210600E778F6 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
@@ -66,7 +64,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B29C72D2B153FB600E778F6 /* Kingfisher in Frameworks */,
 				2B4A44572B03CD490083F2DF /* SnapKit in Frameworks */,
 				2B29C72A2B15376300E778F6 /* CoreData.framework in Frameworks */,
 			);
@@ -133,7 +130,6 @@
 		2B4A44542B03CD3D0083F2DF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				2B29C72B2B153E2C00E778F6 /* Kingfisher */,
 				2B29C7292B15376300E778F6 /* CoreData.framework */,
 				2B4A44552B03CD3E0083F2DF /* SnapKit */,
 			);
@@ -159,7 +155,6 @@
 			name = Notes;
 			packageProductDependencies = (
 				2B4A44562B03CD490083F2DF /* SnapKit */,
-				2B29C72C2B153FB600E778F6 /* Kingfisher */,
 			);
 			productName = Notes;
 			productReference = 2B4A443D2B03CB520083F2DF /* Notes.app */;
@@ -448,10 +443,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		2B29C72C2B153FB600E778F6 /* Kingfisher */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Kingfisher;
-		};
 		2B4A44562B03CD490083F2DF /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SnapKit;

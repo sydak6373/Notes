@@ -155,6 +155,7 @@ class NotesViewController: UIViewController {
         }))
         
         alertController.addAction(UIAlertAction(title: "аккаунта", style: .default, handler: { _ in
+            
             UserDefaults.standard.set(false, forKey: "isLoggedIn") 
             self.dismiss(animated: true, completion: nil)
         }))

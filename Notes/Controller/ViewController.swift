@@ -12,6 +12,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     var textFieldValues: [TextFieldValue] = []
     
+    
     enum TextFieldValue {
             case login(String)
             case email(String)
@@ -78,7 +79,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewDidLoad() {
         super.viewDidLoad()
         configureView()
-        if (UserDefaults.standard.bool(forKey: "isLoggedIn")) {
+        setupObservers()
+        
         if let login = UserDefaults.standard.string(forKey: "login") {
                textFieldValues.append(.login(login))
            }
@@ -88,6 +90,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
            if let password = UserDefaults.standard.string(forKey: "password") {
                textFieldValues.append(.password(password))
            }
+        if (UserDefaults.standard.bool(forKey: "isLoggedIn")) {
             present(NotesViewController(), animated: true, completion: nil)
         }
         
@@ -97,6 +100,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 name: UIApplication.willResignActiveNotification,
                 object: nil
             )
+        
+        
         InputValidation.shared.delegate = self
         tableView.reloadData()
         
@@ -121,6 +126,36 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         deinit {
             NotificationCenter.default.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
         }
+    
+    private func observeIsLoggedIn() {
+        NotificationCenter.default.addObserver(self, selector: #selector(isLoggedInChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
+    }
+    
+    private func setupObservers() {
+        observeIsLoggedIn()
+    }
+    
+    @objc private func isLoggedInChanged(_ notification: Notification) {
+        if let isLoggedIn = UserDefaults.standard.value(forKey: "isLoggedIn") as? Bool {
+            if isLoggedIn {
+                // Пользователь вошел, восстановить значения
+                if let login = UserDefaults.standard.string(forKey: "login") {
+                    textFieldValues.append(.login(login))
+                }
+                if let email = UserDefaults.standard.string(forKey: "email") {
+                    textFieldValues.append(.email(email))
+                }
+                if let password = UserDefaults.standard.string(forKey: "password") {
+                    textFieldValues.append(.password(password))
+                }
+            } else {
+                // Пользователь вышел, очисти��ь значения
+                textFieldValues.removeAll { $0.isLogin || $0.isEmail || $0.isPassword }
+            }
+            
+            tableView.reloadData()
+        }
+    }
     
     func showError(_ message: String) {
             let alertController = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
