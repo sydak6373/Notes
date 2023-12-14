@@ -22,35 +22,49 @@ class SketchViewController: UIViewController, UINavigationControllerDelegate {
         view.addSubview(textView)
         configureTextView()
         configureNotificationCenter()
-    }
+        NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterBackground), name: UIApplication.willResignActiveNotification, object: nil)
+        }
 
+        @objc private func appWillEnterBackground() {
+            let alert = UIAlertController(title: "Выход", message: "Вы уверены, что хотите выйти?", preferredStyle: .alert)
+          
+            let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+            alert.addAction(cancelAction)
+          
+            let exitAction = UIAlertAction(title: "Выйти", style: .destructive) { _ in
+                
+                exit(0)
+            }
+            alert.addAction(exitAction)
+          
+            present(alert, animated: true, completion: nil)
+        }
 
-        private func updateNote() {
-            if textView.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                note.text = "Empty note"
-            } else {
-                if let attributedText = textView.attributedText {
-                    do {
-                        let data = try attributedText.data(
-                            from: NSRange(
-                                location: 0,
-                                length: attributedText.length
-                            ),
-                            documentAttributes: [
-                                .documentType: NSAttributedString.DocumentType.rtfd
-                            ]
-                        )
-                        note.text = textView.text
-                        note.data = data
-                    } catch let error as NSError {
-                        print("Error creating rtfd data: \(error)")
-                    }
+        deinit {
+            NotificationCenter.default.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
+        }
+
+    private func updateNote() {
+        if textView.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            note.text = "Empty note"
+        } else {
+            if let attributedText = textView.attributedText {
+                do {
+                    let data = try attributedText.data(
+                        from: NSRange(location: 0, length: attributedText.length),
+                        documentAttributes: [.documentType: NSAttributedString.DocumentType.rtfd]
+                    )
+                    note.text = textView.text
+                    note.data = data
+                } catch let error as NSError {
+                    print("Error creating rtfd data: \(error)")
                 }
             }
-            
-            NoteManager.shared.update(note: note)
-            delegate?.updateNotes()
         }
+        
+        NoteManager.shared.update(note: note)
+        delegate?.updateNotes()
+    }
 
     private func setTextViewConstraints() {
         textView.translatesAutoresizingMaskIntoConstraints = false
@@ -107,13 +121,10 @@ class SketchViewController: UIViewController, UINavigationControllerDelegate {
     }
 
     private func configureTextViewImage() {
-        let width  = view.frame.size.width - 10
+        let width = view.frame.size.width - 10
         text?.enumerateAttribute(
             NSAttributedString.Key.attachment,
-            in: NSRange(
-                location: 0,
-                length: textView.attributedText.length
-            ),
+            in: NSRange(location: 0, length: textView.attributedText.length),
             options: [],
             using: { [width] (object, range, _) in
                 let textViewAsAny: Any = self.textView
@@ -139,7 +150,8 @@ class SketchViewController: UIViewController, UINavigationControllerDelegate {
                         attachment.image = img
                     }
                 }
-            })
+            }
+        )
     }
 
     @objc private func updateKeyboard(notification: Notification) {
@@ -173,13 +185,8 @@ extension SketchViewController: UITextViewDelegate {
             if let attributedText = textView.attributedText {
                 do {
                     let data = try attributedText.data(
-                        from: NSRange(
-                            location: 0,
-                            length: attributedText.length
-                        ),
-                        documentAttributes: [
-                            .documentType: NSAttributedString.DocumentType.rtfd
-                        ]
+                        from: NSRange(location: 0, length: attributedText.length),
+                        documentAttributes: [.documentType: NSAttributedString.DocumentType.rtfd]
                     )
                     note.text = textView.text
                     note.data = data
@@ -192,5 +199,4 @@ extension SketchViewController: UITextViewDelegate {
         NoteManager.shared.update(note: note)
         updateNote()
     }
-
 }

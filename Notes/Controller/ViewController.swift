@@ -12,6 +12,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     var textFieldValues: [TextFieldValue] = []
     
+    
     enum TextFieldValue {
             case login(String)
             case email(String)
@@ -55,10 +56,31 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         label.numberOfLines = 0
         return label
     }()
+    
+    private let viewModel: ViewModelProtocol
+    
+    init(viewModel: ViewModelProtocol) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+        self.hidesBottomBarWhenPushed = true
+        
+        viewModel.updator = { [weak self] in
+                DispatchQueue.main.async { [weak self] in
+                    self?.tableView.refreshControl?.endRefreshing()
+                    self?.tableView.reloadData()
+                }
+        }
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         configureView()
+        setupObservers()
+        
         if let login = UserDefaults.standard.string(forKey: "login") {
                textFieldValues.append(.login(login))
            }
@@ -68,9 +90,71 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
            if let password = UserDefaults.standard.string(forKey: "password") {
                textFieldValues.append(.password(password))
            }
+        if (UserDefaults.standard.bool(forKey: "isLoggedIn")) {
+            present(NotesViewController(), animated: true, completion: nil)
+        }
+        
+        NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(appWillEnterBackground),
+                name: UIApplication.willResignActiveNotification,
+                object: nil
+            )
+        
+        
         InputValidation.shared.delegate = self
         tableView.reloadData()
         
+        NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterBackground), name: UIApplication.willResignActiveNotification, object: nil)
+        }
+
+        @objc private func appWillEnterBackground() {
+            let alert = UIAlertController(title: "Выход", message: "Вы уверены, что хотите выйти?", preferredStyle: .alert)
+          
+            let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+            alert.addAction(cancelAction)
+          
+            let exitAction = UIAlertAction(title: "Выйти", style: .destructive) { _ in
+                
+                exit(0)
+            }
+            alert.addAction(exitAction)
+          
+            present(alert, animated: true, completion: nil)
+        }
+
+        deinit {
+            NotificationCenter.default.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
+        }
+    
+    private func observeIsLoggedIn() {
+        NotificationCenter.default.addObserver(self, selector: #selector(isLoggedInChanged(_:)), name: UserDefaults.didChangeNotification, object: nil)
+    }
+    
+    private func setupObservers() {
+        observeIsLoggedIn()
+    }
+    
+    @objc private func isLoggedInChanged(_ notification: Notification) {
+        if let isLoggedIn = UserDefaults.standard.value(forKey: "isLoggedIn") as? Bool {
+            if isLoggedIn {
+                // Пользователь вошел, восстановить значения
+                if let login = UserDefaults.standard.string(forKey: "login") {
+                    textFieldValues.append(.login(login))
+                }
+                if let email = UserDefaults.standard.string(forKey: "email") {
+                    textFieldValues.append(.email(email))
+                }
+                if let password = UserDefaults.standard.string(forKey: "password") {
+                    textFieldValues.append(.password(password))
+                }
+            } else {
+                // Пользователь вышел, очисти��ь значения
+                textFieldValues.removeAll { $0.isLogin || $0.isEmail || $0.isPassword }
+            }
+            
+            tableView.reloadData()
+        }
     }
     
     func showError(_ message: String) {
@@ -136,26 +220,30 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
 
     @objc func buttonPressed(_ sender: UIButton) {
+    let userCoreDataManager = UserCoreDataManager()
             switch selectedOption {
             case .login:
                 if let loginCell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? InputCell,
                 let passwordCell = tableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? InputCell,
                 let login = loginCell.textField.text, let password = passwordCell.textField.text {
-                            
-                        guard let savedLogin = UserDefaults.standard.string(forKey: "login"),
-                        let savedPassword = UserDefaults.standard.string(forKey: "password") else {
-                                self.showError("The log-in information is incorrect.")
-                                return
-                            }
-
-                            if login == savedLogin, password == savedPassword {
-                                let notesViewController = NotesViewController()
-                                self.present(notesViewController, animated: true, completion: nil)
-                            } else {
-                                self.showError("The log-in information is incorrect.")
-                            }
-                        }
-                
+                         
+                    let savedUsers = viewModel.dataStorage
+                    let matchingUsersURL = savedUsers.filter { $0.login == login && $0.password == password }
+                    let matchingUsersCD = userCoreDataManager.fetchUsers(login: login, password: password)
+                                
+                    if matchingUsersURL.count > 0 {
+                        UserDefaults.standard.set(true, forKey: "isLoggedIn") 
+                        let notesViewController = NotesViewController()
+                        self.present(notesViewController, animated: true, completion: nil)
+                    } else if matchingUsersCD.count > 0 {
+                        UserDefaults.standard.set(true, forKey: "isLoggedIn")
+                        let notesViewController = NotesViewController()
+                        self.present(notesViewController, animated: true, completion: nil)
+                    } else {
+                        self.showError("Информация для входа неверна.")
+                    }
+                    
+                }
                 break
                 
             case .registration:
@@ -177,6 +265,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                         UserDefaults.standard.set(email, forKey: "email")
                         UserDefaults.standard.set(password, forKey: "password")
                         
+                        viewModel.saveUser(login: login, email: email, password: password)
+                        userCoreDataManager.saveUser(login: login, email: email, password: password)
+
                         let notesViewController = NotesViewController()
                         present(notesViewController, animated: true, completion: nil)
                     }
